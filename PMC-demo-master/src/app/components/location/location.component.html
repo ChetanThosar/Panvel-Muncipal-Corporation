@@ -1,0 +1,58 @@
+<ng-container *ngIf="!fullview; else Full">
+  <div class="smallView">
+    <div id="smallview-label" class="row m-0 p-0 py-2 text-left">
+      <div class="col-1 pointer" (click)="toggleShowInfo()">
+        <img src="../../../assets/arrow-left-thick.svg" alt="Back" class="icon">
+      </div>
+      <div class="col pt-1">
+        <h5>{{location.name}}</h5>
+      </div>
+    </div>
+    <div id="details">
+      <div class="carousel-container">
+        <app-image-carousel></app-image-carousel>
+      </div>
+      <div class="p-4">
+        <p *ngIf="location.price">Price: ₹{{location.price}} /day</p>
+        <p *ngIf="location.address">{{location.address }}</p>
+      </div>
+      <div class="btnInfo">
+        <div class="px-3 py-2 text-center pointer mx-2" style="
+        background-color: #009edf" (click)="clickBooking()">More
+          info</div><br>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #Full>
+  <div class="container my-lg-4 bg-white shadow-lg" *ngIf="location && bookings; else Loading" [@popIn]>
+    <div class="row">
+      <div class="text-container col-12 col-lg-5 px-0">
+        <div id="smallview-label" class="px-4 pt-2 pb-2 pt-lg-4">
+          <a routerLink="/" class="text-white">Home</a>
+          <h1 class="mb-0">{{location.name}}</h1>
+        </div>
+        <div class="carousel-container">
+          <app-image-carousel></app-image-carousel>
+        </div>
+        <div class="p-4">
+          <h5>Details</h5>
+          <p *ngIf="location.price">Price: ₹{{location.price}} /day</p>
+          <p *ngIf="location.dimension">Dimension: {{location.dimension}}</p>
+          <p *ngIf="location.address">{{location.address}}</p>
+          <div class="btn-danger px-3 py-2 text-center pointer" (click)="sendToBooking()">
+            Book
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-7 p-0" *ngIf="bookings">
+        <app-calendar [bookings]="bookings"></app-calendar>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #Loading>
+  <app-spinner></app-spinner>
+</ng-template>

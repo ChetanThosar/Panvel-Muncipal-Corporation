@@ -1,0 +1,42 @@
+<div id="calendar-container" class="p-3">
+  <div class="row text-center justify-content-center">
+    <div class="col-md-12">
+      <h5>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h5>
+    </div>
+    <div class="col-md-12">
+      <div class="btn-group">
+        <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate">
+          Previous
+        </div>
+        <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+          Today
+        </div>
+        <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate">
+          Next
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div [ngSwitch]="view">
+    <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [cellTemplate]="customTemplate" [viewDate]="viewDate"
+      [events]="events" [refresh]="refresh" (dayClicked)="dayCheck($event.day.date)" (beforeViewRender)="beforeMonthViewRender($event)">
+    </mwl-calendar-month-view>
+  </div>
+
+  <br><br><br>
+
+</div>
+
+<ng-template #customTemplate let-day="day" let-openDay="openDay" let-locale="locale" let-tooltipPlacement="tooltipPlacement"
+  let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay" let-eventClicked="eventClicked"
+  let-tooltipTemplate="tooltipTemplate" let-tooltipAppendToBody="tooltipAppendToBody">
+  <div class="cal-cell-top p-0 m-0">
+    <span class="cal-event ml-2" *ngFor="let event of day.events" [style.backgroundColor]="event.color.primary"
+      [ngClass]="event?.cssClass" [mwlCalendarTooltip]="event.title | calendarEventTitle:'monthTooltip':event"
+      [tooltipPlacement]="tooltipPlacement" [tooltipEvent]="event" [tooltipTemplate]="tooltipTemplate"
+      [tooltipAppendToBody]="tooltipAppendToBody">
+    </span>
+    <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+  </div>
+</ng-template>

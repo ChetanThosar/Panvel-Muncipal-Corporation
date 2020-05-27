@@ -1,0 +1,48 @@
+h1 {
+  overflow-wrap: break-word;
+}
+
+#dashboard {
+  overflow-x: hidden;
+}
+
+#content {
+  max-height: 80vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+.pointer>h3 {
+  padding: 10px 0;
+  border: 1px solid lightgray;
+}
+
+@media(max-width: 778px) {
+  h5 {
+    font-size: 0.9rem;
+  }
+}
+
+.selected:hover {
+  background-color: #63b1f55b;
+}
+
+@media(min-width: 779px) {
+  #side-nav {
+    height: 80vh;
+    position: relative;
+  }
+
+  #side-nav>div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+}

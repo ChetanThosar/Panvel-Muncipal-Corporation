@@ -1,0 +1,9 @@
+<div class="container-fluid p-0">
+  <ngb-carousel [showNavigationArrows]="false" *ngIf="images">
+    <ng-container *ngFor="let image of images">
+      <ng-template ngbSlide>
+        <img [src]="image" class="image" alt="Hoarding image" *ngIf="images[0]">
+      </ng-template>
+    </ng-container>
+  </ngb-carousel>
+</div>

@@ -1,0 +1,468 @@
+<div class="container p-0" *ngIf="!showLoading else Loading">
+  <div class="form-container bg-white p-0 p-md-3 my-0 my-md-3">
+    <div class="col main-login main-center">
+      <div style="min-height: 450px">
+        <form>
+          <ng-container *ngIf="currpage !== 0 else acc"></ng-container>
+          <ng-container *ngIf="currpage !== 1 else comp"></ng-container>
+          <ng-container *ngIf="currpage !== 2 else advert"></ng-container>
+          <ng-container *ngIf="currpage !== 3 else chooseDates"></ng-container>
+          <ng-container *ngIf="currpage !== 4 else advertData"></ng-container>
+          <ng-container *ngIf="currpage !== 5 else docupload"></ng-container>
+        </form>
+      </div>
+
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col px-0 pr-2">
+            <div class="btn btn-outline-primary btn-lg btn-block disabled" *ngIf="currpage == 0" (click)="navigate('prev')">Previous</div>
+            <div class="btn btn-outline-primary btn-lg btn-block" *ngIf="currpage != 0" (click)="navigate('prev')">Previous</div>
+          </div>
+          <div class="col px-0 pl-2" *ngIf="currpage < 5">
+            <button class="btn btn-outline-danger btn-lg btn-block" (click)="navigate('next')">Next</button>
+          </div>
+          <div class="col px-0 pl-2" *ngIf="currpage == 5">
+            <div class="btn btn-outline-success btn-lg btn-block" (click)="open(content)">Submit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #acc>
+  <h3 class="mb-3 text-underline">Applicant Details</h3>
+  <div class="form-group">
+    <label for="name">Applicant's Name</label>
+    <input [(ngModel)]="data.appname" type="text" class="form-control" id="name" placeholder="Enter name" name="name"
+      required minlength="4" #appname="ngModel">
+    <div *ngIf="appname.invalid && (appname.dirty || appname.touched)" class="alert alert-danger">
+      <div *ngIf="appname.errors.required">
+        Name is required.
+      </div>
+      <div *ngIf="appname.errors.minlength">
+        Name must be at least 4 characters long.
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="name">Email</label>
+    <input [(ngModel)]="data.email" type="email" class="form-control" id="email" placeholder="Enter email" name="email"
+      required minlength="4" #email="ngModel" (keyup)="checkEmail()" (click)="checkEmail()">
+  </div>
+  <div *ngIf="(email.dirty || email.touched) && emailExists" class="alert alert-danger">
+    Email already exists!
+  </div>
+  <div *ngIf="email.invalid && (email.dirty || email.touched)" class="alert alert-danger">
+    <div *ngIf="email.errors.required">
+      Email is required.
+    </div>
+    <div *ngIf="email.errors.minlength">
+      Email must be at least 8 characters long.
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="name">Password</label>
+    <input [(ngModel)]="data.password" type="password" class="form-control" id="password" placeholder="Enter password"
+      name="password" required minlength="6" #pass="ngModel">
+  </div>
+  <div *ngIf="pass.invalid && (pass.dirty || pass.touched)" class="alert alert-danger">
+    <div *ngIf="pass.errors.required">
+      Password is required.
+    </div>
+    <div *ngIf="pass.errors.minlength">
+      Password must be at least 8 characters long.
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #comp>
+  <h3 class="mb-3 text-underline">Organization Details</h3>
+  <div class="form-check form-group">
+    <span class="custom-control-description"><b>Status:</b></span> <br>
+    <div class="ml-3">
+      <input [(ngModel)]="data.appstatus" type="radio" class="form-check-input" name="orgstatus" id="" value="private"
+        #orgstatus="ngModel" required>Private
+      Organisation <br>
+      <input [(ngModel)]="data.appstatus" type="radio" class="form-check-input" name="orgstatus" id="" value="company"
+        #orgstatus="ngModel" required>Company
+      <br>
+      <input [(ngModel)]="data.appstatus" type="radio" class="form-check-input" name="orgstatus" id="" value="trust"
+        #orgstatus="ngModel" required>Charitable
+      Trust <br>
+      <input [(ngModel)]="data.appstatus" type="radio" class="form-check-input" name="orgstatus" id="" value="others"
+        #orgstatus="ngModel" required>Others
+      <br>
+    </div>
+    <div *ngIf="orgstatus && orgstatus.invalid" class="alert alert-danger">
+      <div *ngIf="orgstatus.errors.required">
+        Status is required.
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="addr">Address:</label>
+    <textarea [(ngModel)]="data.address" class="form-control px-10" name="addr" id="addr" rows="3" #address="ngModel"
+      required></textarea>
+  </div>
+  <div *ngIf="address && address.invalid && (address.dirty || address.touched)" class="alert alert-danger">
+    <div *ngIf="address.errors.required">
+      Address is required.
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="adph">Phone No.:</label>
+    <input [(ngModel)]="data.phoneno" type="tel" class="form-control" name="adph" id="adph" #phoneno="ngModel" required
+      pattern="[0-9]{10}">
+    <div *ngIf="phoneno.invalid && (phoneno.dirty || phoneno.touched)" class="alert alert-danger">
+      <div *ngIf="phoneno.errors.required">
+        Phone number is required.
+      </div>
+      <div *ngIf="phoneno.errors.pattern">
+        Phone number is invalid.
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #advert>
+  <div class="form-check form-group">
+    <span class="custom-control-description">Medium used for the advertisement:</span><br>
+    <div class="form-group">
+      <input [(ngModel)]="data.medium" class="form-check-input" type="radio" name="meduium" value="broadcasted" #medium="ngModel"
+        required>
+      Broadcasted<br>
+      <input [(ngModel)]="data.medium" class="form-check-input" type="radio" name="medium" value="not_broadcasted"
+        #medium="ngModel" required>
+      Not Broadcasted<br>
+    </div>
+  </div>
+  <div *ngIf="medium && medium.invalid&& (medium.dirty || medium.touched)" class="alert alert-danger">
+    <div *ngIf="medium.errors.required">
+      Medium is required.
+    </div>
+  </div>
+  <div class="form-group form-check">
+    <span class="custom-control-description">Type of advertisement</span><br>
+    <div class="form-group">
+      <input [(ngModel)]="data.type" class="form-check-input" type="radio" name="n2" value="temp" #type="ngModel"
+        required> Temporary<br>
+      <input [(ngModel)]="data.type" class="form-check-input" type="radio" name="n2" value="not_temp" #type="ngModel"
+        required> Not Temporary<br>
+    </div>
+  </div>
+  <div *ngIf="type && type.invalid&& (type.dirty || type.touched)" class="alert alert-danger">
+    <div *ngIf="medium.errors.required">
+      Medium is required.
+    </div>
+  </div>
+  <div class="form-group">
+    <span class="custom-control-description">Have u applied for the advertisement symbol/sign:</span>
+    <div class="form-group form-check-inline">&nbsp;
+      <input [(ngModel)]="data.symbol" class="form-check-input" type="radio" name="n3" id="n31" value="symbol" #symbol="ngModel"
+        required>
+      Yes&nbsp;
+      <input [(ngModel)]="data.symbol" class="form-check-input" type="radio" name="n3" id="n32" symbol="no_symbol">
+      No
+    </div>
+  </div>
+  <div *ngIf="symbol && symbol.invalid&& (symbol.dirty || symbol.touched)" class="alert alert-danger">
+    <div *ngIf="symbol.errors.required">
+      Symbol is required.
+    </div>
+  </div>
+  <label class="custom-control-description">If yes,</label>
+  <div class="form-group">
+    <label for="f1">Type(can be subtype) of Advertisement</label>
+    <input type="text" name="f1" id="f1" class="form-control" placeholder="">
+  </div>
+</ng-template>
+
+<ng-template #chooseDates>
+  <dl>
+    <div class="row">
+      <dt class="col-2">From:</dt>
+      <dd class="col-10">{{data.fromDate | date: 'dd-MMM-yyyy' }}</dd><br>
+      <dt class="col-2">To:</dt>
+      <dd class="col-10">{{data.toDate | date: 'dd-MMM-yyyy' }}</dd>
+    </div>
+  </dl>
+  <ng-container *ngIf="bookings">
+    <app-calendar [bookings]="bookings" (getDatesFromService)="getDates()"></app-calendar>
+  </ng-container>
+</ng-template>
+
+<ng-template #advertData>
+  <div class="form-group">
+    <label for="ad">Give the Content of the advertisement:</label>
+    <input [(ngModel)]="data.description" type="text" class="form-control" name="ad" id="ad" placeholder="Summary">
+  </div>
+  <div class="form-group">
+    <label for="im">Attach an image file of ur advertisement:</label>
+    <input type="file" class="form-control" name="im" id="im" (change)="processDoc($event,'image')" required accept="image/jpeg, image/png">
+    <div *ngIf="!data.image " class="alert alert-danger">
+      Image is required.
+    </div>
+  </div>
+  <div class="form-group" *ngIf="location">
+    <div>
+      <label for="street1">Address of the location:</label>
+      <input disabled type="text" name="street1" id="street1" class="form-control" [value]="this.location.address">
+    </div>
+    <div>
+      <span class="custom-control-description">Is it necessary to cut the trees:</span>
+      <div class="form-group form-check-inline">
+        <input [(ngModel)]="data.trees" class="form-check-input" type="radio" name="n5" id="n51" value="cut">
+        Yes&nbsp;
+        <input [(ngModel)]="data.trees" class="form-check-input" type="radio" name="n5" id="n52" value="nocut">
+        No
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="landOwner">Name of the Land Owner:</label>
+    <input disabled type="text" name="landOwner" id="landOwner" class="form-control" value="PMC">
+  </div>
+  <div class="form-group">
+    <span class="custom-control-description">Have u submitted NOC issued by the owner:</span>
+    <div class="form-group form-check-inline">
+      <input class="form-check-input" type="radio" name="n6" id="n61" (change)="data.noc = true">Yes&nbsp;
+      <input class="form-check-input" type="radio" name="n6" id="n62" (change)="data.noc = false">No
+    </div>
+  </div>
+  <div class="form-group">
+    <span class="custom-control-description">Are the documents submitted according to the Article 19(B): </span>
+    <div class="form-group form-check-inline">
+      <input class="form-check-input" type="radio" name="n7" id="n71" (change)="data.a19 = true">Yes&nbsp;
+      <input class="form-check-input" type="radio" name="n7" id="n72" (change)="data.a19 = false">No
+    </div>
+  </div>
+  <div class="form-group pb-3">
+    <div class="form-check">
+      <label class="form-check-label">
+        <input type="checkbox" class="form-check-input" name="c1" id="c1" value="agreed" [checked]="agreed" (change)="agreed = !agreed">
+        <span style="font-size: 12px; line-height: 15px;">I have read and accepted all the
+          conditions put forward by
+          Maharashtra Municipal
+          Corporation(License and
+          Skysign Department's rules and regulations 2014). <br> If the information given by me is found to be
+          incorrect or
+          wrongful in any way, then I can be judged as guilty beofre the law and is entitled to face the punishment.</span>
+      </label>
+    </div>
+    <div *ngIf="!agreed" class="alert alert-danger">
+      Please accept the agreement before proceeding.
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #docupload>
+  <h3 class="mb-3 text-underline">Upload Documents</h3>
+  <div class="table-responsive">
+    <table class="table table-inverse">
+      <thead class="thead-default">
+        <tr>
+          <th class="d-none d-md-inline-block">Sr No.</th>
+          <th>Document Name</th>
+          <th>Added/Uploaded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">1</td>
+          <td>Form Application</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d1" id="d1" (change)="processDoc($event,'d1')">
+                <!-- accept="image/*" -->
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">2</td>
+          <td>Owner Land (7/12)</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d2" id="d2" (change)="processDoc($event,'d2')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">3</td>
+          <td>Society NOC on Society Letter Head</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d3" id="d3" (change)="processDoc($event,'d3')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">4</td>
+          <td>Resolution of Society on Society Letter Head</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d4" id="d4" (change)="processDoc($event,'d4')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">5</td>
+          <td>Society Light Bill</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d5" id="d5" (change)="processDoc($event,'d5')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">6</td>
+          <td>Certificate of Structural Engineer</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d6" id="d6" (change)="processDoc($event,'d6')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">7</td>
+          <td>Stability Certificate</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d7" id="d7" (change)="processDoc($event,'d7')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">8</td>
+          <td>Traffic Police NOC</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d8" id="d8" (change)="processDoc($event,'d8')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">9</td>
+          <td>Location Plan</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d9" id="d9" (change)="processDoc($event,'d9')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">10</td>
+          <td>Site DTP proposed photo</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d10" id="d10" (change)="processDoc($event,'d10')">
+              </label>
+            </div>
+          </td>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">11</td>
+          <td>Under Taking 1</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d11" id="d11" (change)="processDoc($event,'d11')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">12</td>
+          <td>Under taking 2</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d12" id="d12" (change)="processDoc($event,'d12')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">13</td>
+          <td>Advertising Insurance</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d13" id="d13" (change)="processDoc($event,'d13')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">14</td>
+          <td>Advertising size</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d14" id="d14" (change)="processDoc($event,'d14')">
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td scope="row" class="d-none d-md-inline-block">15</td>
+          <td>Rental Agreement</td>
+          <td>
+            <div class="form-check form-check-inline">
+              <label class="form-check-label">
+                <input class="form-file-input" type="file" name="d15" id="d15" (change)="processDoc($event,'d15')">
+              </label>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Submit booking application</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container-fluid pb-4">
+      <div *ngIf="!isValid" class="alert alert-danger">
+        Form is incomplete! <br> Please fill all the required fields and submit.
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="btn btn-success" style="width: 100%" (click)="submit()">Confirm</div>
+        </div>
+        <div class="col">
+          <div class="btn btn-danger" style="width: 100%" (click)="modal.dismiss('Cross click')">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #Loading>
+  <app-spinner></app-spinner>
+</ng-template>
